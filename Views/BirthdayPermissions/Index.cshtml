@@ -1,0 +1,45 @@
+﻿@model IEnumerable<TeachersPermissions.Models.BirthdayPermissions>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Permisos Solicitados por Cumpleaños</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BirthdayPermissionId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Permission)
+            </th>
+            <th>
+                @Html.DisplayName("Día Solicitado")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BirthdayPermissionId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Permission.PermissionId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GrantedDayDate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.BirthdayPermissionId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.BirthdayPermissionId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.BirthdayPermissionId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

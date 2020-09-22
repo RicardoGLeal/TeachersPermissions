@@ -1,0 +1,193 @@
+﻿@model TeachersPermissions.Models.Permission
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Sistema de Creación de Permisos</h1>
+<h4>Profesor: @ViewBag.Employee.FirstName @ViewBag.Employee.SecondName @ViewBag.Employee.FirstLastName @ViewBag.Employee.SecondLastName</h4>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label"><strong>Número de Identificación: </strong></label>
+                <div class="form-group">
+                    <input asp-for="EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId" value=@ViewBag.Employee.EmployeeId readonly />
+
+                </div>
+                <label class="control-label"><strong>Nombre del Empleado:</strong> @ViewBag.Employee.FirstName @ViewBag.Employee.SecondName @ViewBag.Employee.FirstLastName @ViewBag.Employee.SecondLastName.</label>
+                <label class="control-label"><strong>Fecha de la Solicitud:</strong></label>
+                <label class="control-label requestdate">@ViewBag.RequestDate</label>
+            </div>
+            <div class="form-group">
+                <label asp-for="PermissionType" class="control-label">Tipo de Permiso:</label>
+                <select asp-for="PermissionType" class="permissiontype form-control" asp-items="ViewBag.PermissionType" onchange="SelectedText(this)"></select>
+                <span asp-validation-for="PermissionType" class="text-danger"></span>
+            </div>
+            <div class="hello"></div>
+
+            <label class='alreadyTakenBday' hidden="hidden"><strong>Lo sentimos, ya tomaste tu día de cumpleaños</strong></label>
+
+
+
+            <div class='economicTakenDays_div' hidden="hidden">
+                <h4>Permisos Económicos Registrados</h4><br />
+                @{int economicDaysTaken = 0; }
+                @{int economicDaysRemaining = 9; }
+                @{string ecoMinDay, ecoMaxDay; }
+                @{ DateTime ini = DateTime.Now.AddDays(2);}
+
+                @{ecoMinDay = "" + ini.Year + "-" + ini.Month.ToString("d2") + "-" + ini.Day.ToString("d2");}
+                @{ecoMaxDay = "" + ini.Year + "-" + ini.Month.ToString("d2") + "-" + ini.Day.ToString("d2");}
+
+
+                @foreach (var item in ViewBag.EconomicPermissions)
+                {
+                    <label class=''><strong>Días Tomados: @item.NumberOfDays</strong></label>
+                    <label class=''>Tomaste un permiso económico del día @item.StartDate al día @item.FinalDate</label>
+                    economicDaysTaken += @item.NumberOfDays;
+                    economicDaysRemaining -= @item.NumberOfDays;
+                    <br /><br />
+                }
+                <label class=''><strong>Días Restantes: @economicDaysRemaining</strong></label>
+                @if (economicDaysRemaining > 0)
+                {
+                    <div class='startdatepicker'>
+                        <label class='control-label'>Dia Inicial: </label><br>
+                        <input type='date' class='startdate form-control' name='startdate' min=@ecoMinDay required><br>
+                    </div>
+
+                    <div class='finaldatepicker'>
+                        <label class='control-label'>Dia Final: </label><br>
+                        <input type='date' class='finaldate form-control' name='finaldate' min=@ecoMaxDay required><br>
+                    </div>
+                }
+                else
+                {
+                    <label class='control-label'>Ya agotaste todos tus días económicos! </label><br>
+                }
+            </div>
+
+
+            <div class='HoursTakenDays_div' hidden="hidden">
+                @{String Hours_minDate = "" + DateTime.Now.Year + "-" + DateTime.Now.Month.ToString("d2") + "-" + DateTime.Now.Day.ToString("d2");}
+
+                <div class='daypicker'>
+                    <label class='control-label'>Dia que se solicita: </label><br>
+                    <input type='date' class='date form-control' name='date' min=@Hours_minDate required><br>
+                </div>
+
+                <div class='hourpicker'>
+                    <label class='control-label'>Horario solicitado: </label>
+                    <select class='form-control' id='hoursRange' name='hoursRange' required>
+                        <option>--Horario--</option>
+                        <option>7:00 - 9:00</option>
+                        <option>13:00 - 15:00</option>
+                    </select><br>
+                </div>
+
+                <div class='reason'>
+                    <label class='control-label'>Motivo: </label>
+                    <input name='hours_reason' id='hours_reason' class='form-control hours_reason' runat='server' placeholder='Se enfermó mi gatito :(' type='text' required /><br>
+                </div>
+            </div>
+
+
+            <div class="form-group"><input type="submit" value="Create" class="btn btn-primary submit" disabled="true" onclick="buttonClick(1)" /></div>
+            <input type="text" id="txt" readonly="readonly" />
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function SelectedText(ddlitem) {
+
+        //Variables utilizadas para el caso del cumpleaños
+        @{String birthday = "" + ViewBag.Employee.Birthday; }
+
+        @{ DateTime birthdayDate = Convert.ToDateTime(birthday);}
+        @{ DateTime todayDate = DateTime.Now;}
+
+        @{DateTime birthdayLimitDay = birthdayDate.AddMonths(6).AddYears(todayDate.Year - birthdayDate.Year);}
+
+        @{String minDate = "" + todayDate.Year + "-" + birthdayDate.Month.ToString("d2") + "-" + birthdayDate.Day.ToString("d2");}
+        @{String maxDate = "" + birthdayLimitDay.Year + "-" + birthdayLimitDay.Month.ToString("d2") + "-" + birthdayLimitDay.Day.ToString("d2");}
+
+        @{ int verifyDate = DateTime.Compare(todayDate, birthdayLimitDay);}
+
+        var selvalue = ddlitem.value;
+        var seltext = ddlitem.options[ddlitem.selectedIndex].innerHTML;
+ /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+        var birthdayReq = $("<div class='birthdayReq'><label class='birthday'><strong>Fecha de Nacimiento</strong>: @ViewBag.Employee.Birthday</label><label class='hiredate'><strong>Fecha Límite para tomar el día</strong>: @birthdayLimitDay</label><label class='control-label'>Dia que se solicita: </label><br><input type='date' min=@minDate max=@maxDate class='birthdayDayPicker form-control' name='birthdayDayPicker' required><br><br></div>");
+        var expiredBday = $("<label class='expiredBday'><strong>Lo sentimos, ya no es posible solicitar tu día de cumpleaños</strong></label>");
+        //var alreadyTakenBday = $("<label class='alreadyTakenBday'><strong>Lo sentimos, ya tomaste tu día de cumpleaños</strong></label>");
+        /*---------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        @{DateTime initialQuincena, finalQuincena;}
+        @if(todayDate.Day > 0 && todayDate.Day<15)
+        {
+            initialQuincena = new DateTime(todayDate.Year, todayDate.Month, 01);
+            finalQuincena = new DateTime(todayDate.Year, todayDate.Month, 15);
+        }
+        else
+        {
+            initialQuincena = new DateTime(todayDate.Year, todayDate.Month, 15);
+            finalQuincena = new DateTime(todayDate.Year, todayDate.Month, 30);
+        }
+
+
+        //var hiredate = $("");
+        $('#txt').val(seltext);
+
+            if (selvalue == 1) {
+            $(".birthdayReq").remove();//Elimina todo lo de cumpleaños
+            $(".expiredBday").remove();//Elimina todo lo de cumpleaños
+            $(".alreadyTakenBday").remove();//Elimina todo lo de cumpleaños
+            $(".submit").prop("disabled", false);
+            $(".economicTakenDays_div").prop("hidden", false);
+
+            $(".HoursTakenDays_div").prop("hidden", true);
+            }
+            else if (selvalue == 2) {
+            $(".economicTakenDays_div").prop("hidden", true);
+            $(".HoursTakenDays_div").prop("hidden", true);
+            $(".submit").prop("disabled", false);
+            $(".hello").after(birthdayReq);//Agrega Birthday
+
+                if (@ViewBag.BirthdayPermissionsCount > 0) {
+                //$(".hello").after(alreadyTakenBday);
+                $(".alreadyTakenBday").prop("hidden", false);
+                $(".birthdayDayPicker").prop("disabled", true);
+                $(".submit").prop("disabled", true);
+                }
+                else if (@verifyDate > 0) {
+                $(".hello").after(expiredBday);
+                $(".birthdayDayPicker").prop("disabled", true);
+                $(".submit").prop("disabled", true);
+                }
+
+            }
+            else if (selvalue == 3) {
+            $( ".HoursTakenDays_div" ).insertAfter( $( ".hello" ) );
+            $(".economicTakenDays_div").prop("hidden", true);
+            $(".HoursTakenDays_div").prop("hidden", false);
+
+            $(".birthdayReq").remove();//Elimina todo lo de cumpleaños
+            $(".expiredBday").remove();//Elimina todo lo de cumpleaños
+            $(".alreadyTakenBday").remove();//Elimina todo lo de cumpleaños
+            $(".submit").prop("disabled", false);
+            }
+    }
+</script>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

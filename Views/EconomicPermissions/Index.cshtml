@@ -1,0 +1,51 @@
+﻿@model IEnumerable<TeachersPermissions.Models.EconomicPermissions>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Permisos Económicos</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FinalDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfDays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Permission)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FinalDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberOfDays)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Permission.PermissionId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.EconomicPermissionId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.EconomicPermissionId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.EconomicPermissionId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

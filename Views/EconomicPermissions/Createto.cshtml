@@ -1,0 +1,95 @@
+﻿@model TeachersPermissions.Models.EconomicPermissions
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/views/shared/_layout.cshtml";
+}
+
+<h1>Permisos Económicos</h1>
+
+<h4>Profesor: @ViewBag.Employee.FirstName @ViewBag.Employee.SecondName @ViewBag.Employee.FirstLastName @ViewBag.Employee.SecondLastName</h4>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Createto">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+
+
+                <label class="control-label"><strong>Número de Identificación: </strong></label>
+                <div class="form-group">
+                    <input asp-for="Permission.EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId" value=@ViewBag.Employee.EmployeeId readonly />
+
+                </div>
+                <label class="control-label"><strong>Nombre del Empleado:</strong> @ViewBag.Employee.FirstName @ViewBag.Employee.SecondName @ViewBag.Employee.FirstLastName @ViewBag.Employee.SecondLastName.</label>
+                <label class="control-label"><strong>Fecha de la Solicitud:</strong></label>
+                <label class="control-label requestdate">@ViewBag.RequestDate</label>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Permission.PermissionType" class="control-label">Tipo de Permiso:</label>
+                    <select asp-for="Permission.PermissionType" class="permissiontype form-control" asp-items="ViewBag.PermissionType" readonly"></select>
+                    <span asp-validation-for="Permission.PermissionType" class="text-danger"></span>
+            </div>
+
+            <div class='economicTakenDays_div'>
+                <h4>Permisos Económicos Registrados</h4><br />
+                @{int economicDaysTaken = 0; }
+                @{int economicDaysRemaining = 9; }
+                @{string ecoMinDay, ecoMaxDay; }
+                @{ DateTime ini = DateTime.Now.AddDays(2);}
+
+
+                @{DateTime proviDay, alpha; }
+                @{ecoMinDay = "" + ini.Year + "-" + ini.Month.ToString("d2") + "-" + ini.Day.ToString("d2"); }
+                @foreach (var item in ViewBag.EconomicPermissions)
+                {
+                    <label class=''><strong>Días Tomados: @item.NumberOfDays</strong></label>
+                    <label class=''>Tomaste un permiso económico del día @item.StartDate al día @item.FinalDate</label>
+
+                    @if (item.NumberOfDays == 3)
+                    {
+                        proviDay = item.StartDate.AddMonths(1);
+                        ecoMinDay = "" + proviDay.Year + "-" + proviDay.Month.ToString("d2") + "-" + proviDay.Day.ToString("d2");
+                    }
+                    else
+                    {
+                    }
+                    economicDaysTaken += @item.NumberOfDays;
+                    economicDaysRemaining -= @item.NumberOfDays;
+                <br /><br />
+                }
+                <label class=''><strong>Días Restantes: @economicDaysRemaining</strong></label>
+                @if (economicDaysRemaining > 0)
+                {
+                    <div class='startdatepicker'>
+                        <label class='control-label'>Dia Inicial: </label><br>
+                        <input asp-for="StartDate" type='date' class='startdate form-control' name='startdate' min=@ecoMinDay required><br>
+                    </div>
+
+                    <div class='finaldatepicker'>
+                        <label class='control-label'>Dia Final: </label><br>
+                        <input asp-for="FinalDate" type='date' class='finaldate form-control' name='finaldate' min=@ecoMinDay required><br>
+                    </div>
+                    <div class="form-group"><input type="submit" value="Createto" class="btn btn-primary submit" /></div>
+                }
+                else
+                {
+                    <label class='control-label'>Ya agotaste todos tus días económicos! </label><br>
+                    <div class="form-group"><input type="submit" value="Createto" class="btn btn-primary submit" disabled="disabled" /></div>
+                }
+            </div>
+
+            <input type="text" id="txt" readonly="readonly" />
+        </form>
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

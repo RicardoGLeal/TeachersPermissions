@@ -1,0 +1,57 @@
+﻿@model IEnumerable<TeachersPermissions.Models.HoursPermissions>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Permisos de Dos Horas</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("ID Permiso de Dos Horas")
+            </th>
+            <th>
+                @Html.DisplayName("ID Permiso")
+            </th>
+            <th>
+                @Html.DisplayName("Día")
+            </th>
+            <th>
+                @Html.DisplayName("Horario Solicitado")
+            </th>
+            <th>
+                @Html.DisplayName("Motivo")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.HoursPermissionsId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Permission.PermissionId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Day)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HoursRange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reason)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.HoursPermissionsId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.HoursPermissionsId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.HoursPermissionsId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,74 @@
+﻿@model TeachersPermissions.Models.BirthdayPermissions
+@{
+    ViewData["Title"] = "Permiso de Cumpleaños";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Permiso de Cumpleaños</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Createto">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <label class="control-label"><strong>Número de Identificación: </strong></label>
+            <div class="form-group">
+                <input asp-for="Permission.EmployeeId" class="form-control" asp-items="ViewBag.EmployeeId" value=@ViewBag.Employee.EmployeeId readonly />
+
+            </div>
+            <label class="control-label"><strong>Nombre del Empleado:</strong> @ViewBag.Employee.FirstName @ViewBag.Employee.SecondName @ViewBag.Employee.FirstLastName @ViewBag.Employee.SecondLastName.</label>
+            <label class="control-label"><strong>Fecha de la Solicitud:</strong></label>
+            <label class="control-label requestdate">@ViewBag.RequestDate</label>
+
+
+
+            <div class="form-group">
+                <label asp-for="Permission.PermissionType" class="control-label">Tipo de Permiso:</label>
+                <select asp-for="Permission.PermissionType" class="permissiontype form-control" asp-items="ViewBag.PermissionType" readonly"></select>
+                <span asp-validation-for="Permission.PermissionType" class="text-danger"></span>
+            </div>
+
+            <div class='birthdayReq'>
+                @{String birthday = "" + ViewBag.Employee.Birthday; }
+                @{ DateTime birthdayDate = Convert.ToDateTime(birthday);}
+                @{DateTime birthdayLimitDay = birthdayDate.AddMonths(6).AddYears(DateTime.Now.Year - birthdayDate.Year);}
+                @{ int verifyDate = DateTime.Compare(DateTime.Now, birthdayLimitDay);}
+
+                @{String minDate = "" + DateTime.Now.Year + "-" + DateTime.Now.Month.ToString("d2") + "-" + DateTime.Now.Day.ToString("d2");}
+                @{String maxDate = "" + birthdayLimitDay.Year + "-" + birthdayLimitDay.Month.ToString("d2") + "-" + birthdayLimitDay.Day.ToString("d2");}
+
+                <label class='birthday'>
+                    <strong>Fecha de Nacimiento</strong>: @ViewBag.Employee.Birthday
+                </label>
+                <label class='hiredate'><strong>Fecha Límite para tomar el día</strong>: @birthdayLimitDay</label>
+                @*<label class='control-label'>Dia que se solicita: </label><br>*@
+
+                @if (ViewBag.BirthdayPermissionsCount > 0)
+                {
+                    <label class='alreadyTakenBday'><strong>Lo sentimos, ya tomaste tu día de cumpleaños</strong></label>
+                    <input type="submit" value="Create" class="btn btn-primary" disabled="disabled" />
+                }
+                else if (@verifyDate > 0)
+                {
+                    <label class='expiredBday'><strong>Lo sentimos, ya no es posible solicitar tu día de cumpleaños</strong></label>
+                    <input type="submit" value="Create" class="btn btn-primary" disabled="disabled" />
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label asp-for="GrantedDayDate" class="control-label">Día que se solicita: </label>
+
+                        <input asp-for="GrantedDayDate" type="date" class="birthdayDayPicker form-control" min=@minDate max=@maxDate required /><br>
+                        <span asp-validation-for="GrantedDayDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                }
+                </div>
+           </form>
+    </div>
+</div>
+
+
+
+

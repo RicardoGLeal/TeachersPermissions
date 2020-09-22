@@ -1,0 +1,97 @@
+﻿@model IEnumerable<TeachersPermissions.Models.Permission>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Permisos Registrados</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("ID del Permiso")
+            </th>
+            <th>
+                @Html.DisplayName("ID del Empleado")
+            </th>
+            <th>
+                @Html.DisplayName("Tipo de Permiso")
+            </th>
+            <th>
+                @Html.DisplayName("Fecha de la Solicitud")
+            </th>
+            <th>
+                @Html.DisplayName("Autorización")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{String type = "";}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PermissionId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employee.EmployeeId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PermissionTypeNavigation.PermissionTypeDesc)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RequestDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Autorize)
+                </td>
+                @switch (item.PermissionTypeNavigation.PermissionTypeId)
+                {
+                    case 1:
+                        type = "EconomicPermissions";
+                        break;
+                    case 2:
+                        type = "BirthdayPermissions";
+                        break;
+                    case 3:
+                        type = "HoursPermissions";
+                        break;
+                }
+            <td>
+                <a asp-action="" asp-controller="@type" asp-route-id="@item.PermissionId">Info del Permiso</a> |
+                <a asp-action="Edit" asp-route-id="@item.PermissionId">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.PermissionId">Delete</a>
+                @if (ViewBag.id == 9999 && item.Autorize == "En Espera")
+                {
+                    <br>
+                    <button class="form-control"><a asp-action="Validate" asp-route-id="@item.PermissionId">Validar</a></button>
+                    <button class="form-control"><a asp-action="Denegate" asp-route-id="@item.PermissionId">Rechazar</a></button>
+                }
+            </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<h3>Solicitar un Permiso:</h3>
+<br>
+
+<a asp-action="Createto" asp-controller="EconomicPermissions" asp-route-id="@ViewBag.id"> <button class="form-control" style="margin-bottom: 8px">Económico</button></a>
+<a asp-action="Createto" asp-controller="BirthdayPermissions" asp-route-id="@ViewBag.id"> <button class="form-control" style="margin-bottom: 8px">Cumpleaños</button></a>
+<a asp-action="Createto" asp-controller="HoursPermissions" asp-route-id="@ViewBag.id"> <button class="form-control" style="margin-bottom: 8px">Dos Horas</button></a>
+
+
+
+@if (ViewBag.id == 9999)
+{
+    <h3>Ver Profesores</h3>
+    <a asp-action="" asp-controller="Employees"> <button class="form-control" style="margin-bottom: 8px">Profesores</button></a>
+
+
+    <h3>Ver Promedios</h3><br>
+    <a asp-action="PromedioAño" asp-controller="Home" asp-route-id="1"> <button class="form-control" style="margin-bottom: 8px">Promedio de Permisos al Año</button></a>
+    <a asp-action="PromedioAño" asp-controller="Home" asp-route-id="2"> <button class="form-control" style="margin-bottom: 8px">Promedio de Permisos por Mes</button></a>
+}
